@@ -3,17 +3,21 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import http from "./http";
-import axios from "axios"
-import dayjs from  "dayjs"
+import axios from "axios";
+import dayjs from "dayjs";
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
-import VCharts from 'v-charts';
+import VCharts from "v-charts";
+import JsonExcel from "vue-json-excel";
+import mavonEditor from "mavon-editor"
+import 'mavon-editor/dist/css/index.css'
 
-
+Vue.component("downloadExcel", JsonExcel);
 Vue.use(VCharts);
 Vue.use(ElementUI);
-Vue.prototype.$axios = http
-Vue.prototype.$dayjs =dayjs
+Vue.use(mavonEditor)
+Vue.prototype.$axios = http;
+Vue.prototype.$dayjs = dayjs;
 Vue.config.productionTip = false;
 
 //响应拦截

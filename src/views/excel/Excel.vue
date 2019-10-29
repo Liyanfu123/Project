@@ -1,8 +1,15 @@
+<!--  导出excel-->
 <template>
   <div>
-    <el-table :data="tableData" style="width: 100%" >
+    <div style="width: 200px;margin-bottom: 10px">
+      <el-input placeholder="请输入内容" v-model="input" clearable> </el-input>
+    </div>
+    <el-table
+        :data="arr.slice(allPages * (nowPages - 1), nowPages * allPages)"
+        style="width: 100%"
+    >
       <!--      名称-->
-      <el-table-column label="名称" width="300" align="center">
+      <el-table-column label="名称" width="300" align="center" >
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.NAME }}</span>
         </template>
@@ -29,75 +36,95 @@
       </el-table-column>
       <el-table-column label="操作" width="240" align="center">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="dialogFormVisible(scope.$index, scope.row) ===true">
-            <i class="el-icon-edit"></i>
-            修改</el-button
+          <el-button
+              size="mini"
+              type="primary"
+              @click="edit(scope.$index, scope.row)"
           >
-          <el-button size="mini" type="danger" @click="del(scope.$index, scope.row)">
-            <i class="el-icon-delete"></i>
-            删除</el-button
+            导出xls</el-button
+          >
+          <el-button
+              size="mini"
+              type="danger"
+              @click="del(scope.$index, scope.row)"
+          >
+            导出csv</el-button
           >
         </template>
       </el-table-column>
     </el-table>
-<!--    <template>-->
-<!--      <el-dialog title="收货地址" :visible.sync="dialogFormVisible">-->
-<!--        <el-form :model="form">-->
-<!--          <el-form-item label="活动名称" :label-width="formLabelWidth">-->
-<!--            <el-input v-model="form.name" autocomplete="off"></el-input>-->
-<!--          </el-form-item>-->
-<!--          <el-form-item label="活动区域" :label-width="formLabelWidth">-->
-<!--            <el-select v-model="form.region" placeholder="请选择活动区域">-->
-<!--              <el-option label="区域一" value="shanghai"></el-option>-->
-<!--              <el-option label="区域二" value="beijing"></el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
-<!--        </el-form>-->
-<!--        <div slot="footer" class="dialog-footer">-->
-<!--          <el-button @click="dialogFormVisible = false">取 消</el-button>-->
-<!--          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>-->
-<!--        </div>-->
-<!--      </el-dialog>-->
-<!--    </template>-->
+    <!--    分页-->
+    <div class="block">
+      <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[10, 20, 30, 40]"
+          layout="total,sizes,prev,pager,next,jumper"
+          :total="arr.length"
+      ></el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
-export default {
-  name: "Excel",
-  components: {},
-  props: {},
-  data() {
-    return {
-      tableData: [],
-      dialogFormVisible:false
-    };
-  },
-  methods: {
-    getCity() {
-      this.$axios
-        .req("/api/tableData ")
-        .then(res => {
-          console.log(res);
-          this.tableData = res.data;
-        })
-        .catch(err => {
-          console.log(err);
-        });
+  export default {
+    name: "Paging",
+    components: {},
+    props: {},
+    data() {
+      return {
+        input: "", // 搜索的关键字
+        tableData: [],
+        arr: [], // 这个数组里面的数据都是过滤之后的
+        currentPage: 1,
+        allPages: 800,
+        nowPages: 1,
+      };
     },
-    del(index){
-      this.tableData.splice(index,1)
-    }
-  },
-  mounted() {
-    this.getCity();
-  },
-  created() {},
-  filters: {},
-  computed: {},
-  watch: {},
-  directives: {}
-};
+    methods: {
+      getCity() {
+        this.$axios
+            .req("/api/tableData ")
+            .then(res => {
+              console.log(res);
+              this.tableData = res.data;
+              this.arr = res.data;
+            })
+            .catch(err => {
+              console.log(err);
+            });
+      },
+      //分页 页数
+      handleSizeChange(val) {
+        this.allPages = val;
+      },
+      handleCurrentChange(val) {
+        this.nowPages = val;
+      }
+    },
+    watch: {
+      input(val) {
+        // 说明输入框有值
+        if (val.trim() !== "") {
+          this.arr = this.tableData.filter(item => {
+            return JSON.stringify(item).includes(val);
+            // return JSON.stringify(item).indexOf(val) > 0
+            // return JSON.stringify(item).indexOf(val) !== -1
+          });
+        } else {
+          this.arr = this.tableData;
+        }
+      }
+    },
+    mounted() {
+      this.getCity();
+    },
+    created() {},
+    filters: {},
+    computed: {},
+    directives: {}
+  };
 </script>
 
 <style scoped lang="scss"></style>
