@@ -146,13 +146,14 @@ export default {
                  if (res.code === 200) {
                   this.$message({
                     showClose: true,
-                    message: "数据传送成功",
+                    message: "文章发布成功",
                     type: "success"
                   });
                 }
               });
         }
       });
+        this.$router.push("/publish");
     }
   },
   mounted() {},

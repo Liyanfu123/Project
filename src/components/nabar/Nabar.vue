@@ -50,7 +50,7 @@
         </el-menu-item>
         <!--        退出系统-->
         <el-menu-item index="9" @click="exit">
-          <i class="el-icon-error"></i>
+          <i class="el-icon-switch-button"></i>
           <span slot="title">退出系统</span>
         </el-menu-item>
       </el-menu>

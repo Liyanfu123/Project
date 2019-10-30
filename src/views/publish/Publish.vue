@@ -3,10 +3,10 @@
   <div class="back">
     <div v-if="list.length > 0">
       <div class="publish">
-        <el-table :data="list" border style="width: 100%">
-          <el-table-column prop="number" type="index" width="30" align="center">
+        <el-table :data="list.slice(allPages * (nowPages - 1), nowPages * allPages)" border style="width: 100%">
+          <el-table-column prop="number" type="index" width="40" align="center">
           </el-table-column>
-          <el-table-column prop="date" label="标题" width="260" align="center">
+          <el-table-column prop="date" label="标题" width="250" align="center">
             <template slot-scope="scope">
               <span style="margin-left: 10px">{{ scope.row.title }}</span>
             </template>
@@ -21,8 +21,8 @@
               <el-tag type="info" v-if="scope.row.category === 'Vue'">{{scope.row.category}}</el-tag>
               <el-tag v-if="scope.row.category === 'React'">{{ scope.row.category }}</el-tag>
               <el-tag type="success" v-if="scope.row.category === 'Node.js'">{{ scope.row.category }}</el-tag>
-              <el-tag type="warning" v-if="scope.row.category === '性能优化'">{{ scope.row.category }}</el-tag>
-              <el-tag type="danger" v-if="scope.row.category === 'JavaScript'">{{ scope.row.category }}</el-tag>
+              <el-tag type="warning" v-if="scope.row.category === '性能优化'">{{scope.row.category}}</el-tag>
+              <el-tag type="danger" v-if="scope.row.category === 'JavaScript'">{{scope.row.category}}</el-tag>
               <el-tag type="info" v-if="scope.row.category === '小程序'">{{ scope.row.category }}</el-tag>
               <el-tag type="warning" v-if="scope.row.category === '工具类'">{{ scope.row.category }}</el-tag>
               <el-tag type="success" v-if="scope.row.category === '其他'">{{ scope.row.category }}</el-tag>
@@ -63,7 +63,7 @@
               <el-button
                   type="primary"
                   size="mini "
-                  @click="edit(scope.$index, scope.row)"
+                  @click="edit(scope.row)"
               >
                 编辑
               </el-button>
@@ -77,7 +77,7 @@
               <el-button
                   size="mini "
                   type="success"
-                  @click="viewArticles(scope.$index, scope.row)"
+                  @click="viewArticles(scope.row)"
               >
                 查看</el-button>
             </template>
@@ -85,18 +85,33 @@
         </el-table>
       </div>
     </div>
-    <div v-else><h1 style="text-align: center">嘻嘻~~~ 暂时没有发表的文章~~~</h1></div>
+    <div v-else><h1 style="text-align: center;font-weight: 500">嘻嘻~~~ 暂时没有发表的文章~~~</h1></div>
+
+    <!--    分页-->
+    <div class="block">
+      <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[10, 20, 40]"
+          layout="total,sizes,prev,pager,next,jumper"
+          :total="list.length"
+      ></el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
   export default {
-    name: "Published",
+    name: "Publish",
     components: {},
     props: {},
     data() {
       return {
-        list: []
+        list: [],
+        currentPage: 1,  //打开默认跳转到第一页
+        allPages: 10,    //默认选择 每页显示5条
+        nowPages: 1,    //当前页
       };
     },
     methods: {
@@ -107,8 +122,8 @@
               this.list = res.data;
               this.arr= res.data
               this.list.map(item=>{
-                item.star=Number(item.star)
-              });                              //导入star将其转换成数字
+                item.star=Number(item.star)      //导入star将其转换成数字
+              });
               console.log(res);
             })
             .catch(arr => {
@@ -127,9 +142,20 @@
             })
       },
       //编辑
-      edit(){},
-      //查看
-      viewArticles(){}
+      edit(row){
+        this.$router.push({name:"editpost",query:{id:row._id}});
+      },
+      //跳转查看
+      viewArticles(row){
+        this.$router.push({name:"check",query:{id:row._id}});
+      },
+      //分页 页数
+      handleSizeChange(val) {
+        this.allPages = val;
+      },
+      handleCurrentChange(val) {
+        this.nowPages = val;
+      }
     },
     mounted() {
       this.getlist();

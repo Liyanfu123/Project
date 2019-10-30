@@ -61,7 +61,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-sizes="[10, 20, 30, 40]"
+        :page-sizes="[10, 50, 100, 150]"
         layout="total,sizes,prev,pager,next,jumper"
         :total="arr.length"
       ></el-pagination>
@@ -97,9 +97,9 @@ export default {
       input: "", // 搜索的关键字
       tableData: [],
       arr: [], // 这个数组里面的数据都是过滤之后的
-      currentPage: 1,
-      allPages: 800,
-      nowPages: 1,
+      currentPage: 1,  //默认选择跳转到第几页
+      allPages: 10,   //默认选择每页显示10条
+      nowPages: 1,  //当前页
       dialogFormVisible: false, //默认不出现
       form: {} //接受选中的值
     };
@@ -152,6 +152,7 @@ export default {
   },
   watch: {
     input(val) {
+      this.nowPages=1  //跳转到第一页
       // 说明输入框有值
       if (val.trim() !== "") {
         this.arr = this.tableData.filter(item => {

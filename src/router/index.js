@@ -4,7 +4,6 @@ import Home from "../views/Home.vue";
 import Comment from "../views/comment/Comment";
 import Login from "../views/login/Login";
 Vue.use(VueRouter);
-
 const routes = [
   {
     path: "/",
@@ -119,10 +118,35 @@ const routes = [
     ]
   },
   {
+    //查看文章
+    path: "/check", // 子路由
+    component: Comment, //父路由
+    children: [
+      {
+        path: "",
+        name: "check", // 子路由
+        component: () => import("../views/check/Check")
+      }
+    ]
+  },
+  {
+    //编辑文章
+    path: "/editpost", // 子路由
+    component: Comment, //父路由
+    children: [
+      {
+        path: "",
+        name: "editpost", // 子路由
+        component: () => import("../views/editpost/EditPost")
+      }
+    ]
+  },
+  {
     //登录页面路由
     path: "/login",
     name: Login,
     component: () => import("../views/login/Login")
+
   },
   {
     path: "/about",
