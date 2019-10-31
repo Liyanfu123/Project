@@ -3,7 +3,11 @@ import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Comment from "../views/comment/Comment";
 import Login from "../views/login/Login";
+import Register from "../views/register/Register";
+
+
 Vue.use(VueRouter);
+
 const routes = [
   {
     path: "/",
@@ -149,6 +153,13 @@ const routes = [
 
   },
   {
+    //注册页面路由
+    path: "/register",
+    name: Register,
+    component: () => import("../views/register/Register")
+
+  },
+  {
     path: "/about",
     name: "about",
     // route level code-splitting
@@ -165,4 +176,13 @@ const router = new VueRouter({
   routes
 });
 
+//路由守卫
+router.beforeEach((to,from,next) =>{
+  let user = localStorage.getItem('user')
+  if(to.path === '/login' || to.path === '/register'){
+    next ()
+  } else {
+    user ? next():next('/login')
+  }
+})
 export default router;

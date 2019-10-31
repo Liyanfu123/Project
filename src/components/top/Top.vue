@@ -2,10 +2,10 @@
   <div>
     <div id="top">
       <div>
-        <span class="tit-text" style="margin-left: 40px">欢迎 {{user}},来到小梨后台管理系统</span>
+        <span class="tit-text" style="margin-left: 40px">欢迎 {{user.user}},来到小梨后台管理系统</span>
       </div>
       <div style="display: flex;justify-content: space-between">
-        <span class="tit-text" style="margin-right: 40px">{{hoursTip}}，亲爱的 {{user}}，上次登录时间：2019/10/24</span>
+        <span class="tit-text" style="margin-right: 40px">{{hoursTip}}，亲爱的 {{user.user}}，上次登录时间：{{day}}</span>
       </div>
     </div>
   </div>
@@ -19,6 +19,10 @@ export default {
   data() {
     return {
       hoursTip:' ',
+      user:{},
+      Times:'',    //记录当前时间与上次登录时间的时间差
+      today:'',   //记录当前时间的凌晨的时间戳
+      day:''     //格式化后的时间差
     };
   },
   methods: {
@@ -39,15 +43,19 @@ export default {
 
     }
   },
-  mounted() {},
+  mounted() {
+    //登录时，显示登录用户的name
+    this.user= JSON.parse(localStorage.getItem("user"))
+    this.today =new this.$dayjs().hour(0).minute(0).second(0).millisecond(0)
+    this.Times =Math.floor(this.$dayjs().diff(this.today)/1000/3600)
+    //调整时间格式
+    this.day= this.$dayjs(this.user.date).format("YYYY年MM月DD日 HH:mm:ss")
+  },
   created() {
     this.getMycount();
   },
   filters: {},
   computed: {
-    user(){
-      return this.$store.state.user
-    }
   },
   watch: {},
   directives: {}
